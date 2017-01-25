@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>API</title>
+	<meta charset="UTF-8">
+</head>
+<body>
+  WINES
+  <div id="main">
+    <ul class="wines"></ul>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  <script type="text/javascript">
+  //Exemple AJAX
+  f404 = function() {
+    alert( "Ressource not found" );
+  }
+  $.ajax({
+    method: "GET",
+    url: "http://www.project.dev/v1/wines",
+    statusCode: {
+        404: f404,
+        200: function(data) {
+          $(data).each(function(index,wine){
+            $("<li>").text(wine.name).appendTo("ul.wines");
+          });
+        }
+      }
+  });
+  $.ajax({
+    method: "POST",
+    url: "http://www.project.dev/v1/wines",
+    statusCode: {
+        404: f404,
+        200: function(data) {
+          $(data).each(function(index,wine){
+            $("<li>").text(wine.name).appendTo("ul.wines");
+          });
+        }
+      }
+  });
+
+    </script>
+</body>
+</html>

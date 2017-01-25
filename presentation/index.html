@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+
+  </head>
+  <body>
+
+
+    <br>
+    <div id="list"><div id="count">Nombre de personne</div></div>
+    <br>
+    <a id="prev">&lt;</a>
+    <a id="next">&gt;</a>
+
+
+    <form class="text-center" action="" method="POST" id="people">
+      <label for="id">Identifiant: </label>
+      <input id="id" type="number" name="id">
+      <button type="submit" >valider</button>
+    </form>
+    <div id="res"></div>
+
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script type="text/javascript">
+    function people(url){
+      $.get(url, function(data){
+        $("#next").attr("href", data.next);
+        $("#prev").attr("href", data.previous);
+        $("#list li").remove();
+        for (var i in data.results) {
+          var people = data.results[i];
+          var a = document.createElement("a");
+          a.text = people.name;
+          a.href = people.url;
+        /*  var a = "<a href = '" + people.url + "'>" + people.name + "<a>";*/
+          var a = $("<a>").attr('href', people.url).text(people.name);
+          var li = $("<li>").html(a);
+          $("#list").append(li);
+        }
+      });
+    }
+
+
+
+      $(document).ready(function(){
+        people("http://swapi.co/api/people/");
+        $("#next, #prev").on("click", function(event){
+          event.preventDefault();
+          people($(this).attr('href'));
+        });
+
+
+        $("#people").submit(function(event){
+          event.preventDefault();
+          var valID = $(this).find("#id").val();
+          $.get("http://swapi.co/api/people/" + valID, function(data){
+            //ajout des donnees dans notre page
+             $("#res").html(data.name + "<br>" + data.height + "<br>" + data.mass)
+          });
+        });
+      });
+
+    </script>
+  </body>
+</html>

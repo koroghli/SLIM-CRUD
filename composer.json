@@ -1,0 +1,7 @@
+{
+    "name": "wine/api",
+    "description": "Application de référence de VIN",
+    "require": {
+        "slim/slim": "3.3"
+    }
+}
