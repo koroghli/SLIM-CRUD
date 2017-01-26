@@ -3,43 +3,223 @@
 <head>
 	<title>API</title>
 	<meta charset="UTF-8">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
-<body>
-  WINES
-  <div id="main">
-    <ul class="wines"></ul>
-  </div>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-  <script type="text/javascript">
-  //Exemple AJAX
-  f404 = function() {
-    alert( "Ressource not found" );
-  }
-  $.ajax({
-    method: "GET",
-    url: "http://www.project.dev/v1/wines",
-    statusCode: {
-        404: f404,
-        200: function(data) {
-          $(data).each(function(index,wine){
-            $("<li>").text(wine.name).appendTo("ul.wines");
-          });
-        }
-      }
-  });
-  $.ajax({
-    method: "POST",
-    url: "http://www.project.dev/v1/wines",
-    statusCode: {
-        404: f404,
-        200: function(data) {
-          $(data).each(function(index,wine){
-            $("<li>").text(wine.name).appendTo("ul.wines");
-          });
-        }
-      }
-  });
+<style>
+body{
+	background: url('http://www.made-in-italy.com/files/imagecache/lg/pictures/italian-wine/learning/the-joys-of-a-personal-wine-cellar.jpg');
+	background-size: cover;
+}
+*{
+	color:white;
+}
+button{
+ background-color:#8B0000 ;
+ border:1px solid #8B0000;
+}
+#description{
+	background-color: rgba(0,0,0,0.9);
+	width: 400px;
+	border: 1px solid rgba(0,0,0,0.1);
+	padding: 25px;
+	margin: 25px;
+	color:white;
+}
+h1, h1, h3{
+	color:white;
+}
 
-    </script>
+</style>
+<body>
+	<h1 style="color:white" class="text-center">Wines API</h1>
+	<br>
+	<div class="row">
+		<div class="col-md-4 col-md-offset-4">
+			<div id="main">
+				<ul class="wines"></ul>
+				<div id="wine">
+					<ul></ul>
+				</div>
+		</div>
+		<div  id = "description" class="col-md-4" style=" ">
+			<h3 class="text-center">Description</h3>
+			<p class="text-center">La creation d'une API du vin avec le micro-freamwork Slim
+			<br>
+			cette Application permettre de creer, supprimer et mettre a jours les differents types du vin
+			<br>
+			pour modifier le nom du vin il faut double cliquer dessus, aprés il faut cliquer sur le champ pour le modifier
+		  </p>
+		</div>
+
+	</div>
+	</div>
+
+		<!--creer un nouveau elemnet-->
+		<div class="row col-md-offset-4">
+			<div class="text-center">
+				<form id="addWine" class="form-group" style=" background-color: rgba(0,0,0,0.9); width: 400px; border: 1px solid rgba(0,0,0,0.1); padding: 25px; margin: 25px;">
+					<h2 style="color:white">Ajouter ton vin</h2>
+					<label for="input-name" style="color:white">Name: </label>
+					<br>
+					<input id="input-name" type="text" name="name" >
+					<br>
+					<label for="input-description" style="color:white">description: </label>
+					<br>
+					<input id="input-description" type="text" name="description" >
+					<br>
+					<label for="country" style="color:white">country: </label>
+					<br>
+					<input id="input-country" type="text" name="country" >
+					<br>
+					<label for="region" style="color:white">Region: </label>
+					<br>
+					<input id="input-region" type="text" name="region" >
+					<br>
+					<label for="grapes" style="color:white">Grapes</label>
+					<br>
+					<input id="input-grapes" type="text" name="grapes" >
+					<br>
+					<label for="input-year" style="color:white">Year: </label>
+					<br>
+					<input  id="input-year" type="text" name="year" >
+					<br>
+					<br>
+					<button class="btn btn-default" type="submit" style="background-color:#8B0000 ;border:1px solid #8B0000;color:white;">Créer</button>
+				</form>
+			</div>
+
+
+		</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script type="text/javascript">
+f404 = function() {
+	alert( "Ressource not found" );
+}
+
+$("#addWine").submit(function(event){
+	event.preventDefault();
+	postWineByData($(this).serialize());
+	$(this)[0].reset();
+});
+
+init();
+//GET
+function init(){
+	$.ajax({
+		method: "GET",
+		url: "http://www.project.dev/v1/wines",
+		statusCode: {
+				404: f404,
+				200: function(data) {
+					$("ul.wines").html("");
+					$(data).each(function(index, wine){
+						var a = $("<a>").css("color","white").attr('href', wine.id).text(wine.name);
+						var del = $('<button>').addClass('btn btn-default').css("backgroundColor", "#8B0000").css("border", "1px solid #8B0000").css("color", "white").val(wine.id).text("Supprimer");
+						$("<li>").append(a, del).appendTo("ul.wines");
+					});
+					//(event click) GET {id}
+					$('ul.wines li a').on('click', function(event){
+				event.preventDefault();
+				var id = $(this).attr('href');
+				getWineById(id);
+				});
+				//(event click) DELETE {id}
+				$('ul.wines li button').on('click', function(event){
+					event.preventDefault();
+				var id = $(this).val();
+				deleteById(id);
+				});
+				}
+			}
+	});
+}
+//GET {id}
+function getWineById(id){
+	$.ajax({
+		method: "GET",
+		url: "http://www.project.dev/v1/wines/" + id,
+		statusCode: {
+				404: f404,
+				200: function(data){
+					displayData(data);
+				}
+			}
+	});
+}
+function convertTextToInput (i,text){
+	var input = $("<input>").attr("type", "text").attr("value", text);
+	return input;
+}
+function displayData(data){
+	$("#wine ul").html("");
+	$("#wine ul").append(
+		$("<li>").addClass("name").text(data.name),
+			$("<li>").addClass("year").text(data.year),
+			$("<li>").addClass("description").text(data.description),
+			$("<li>").addClass("region").text(data.region),
+			$("<li>").addClass("country").text(data.country),
+			$("<li>").addClass("grapes").text(data.grapes)
+	);
+	$("#wine ul li").on('dblclick', function(){
+		//var text = $(this).html();
+		//var input = $("<input>").attr("type", "text").attr("value", text);
+		//$(this).html(input);
+
+		$(this).html(convertTextToInput);
+		$(this).append($("<button>").text("Valider").click(function(){
+			putWineById(data.id);
+		}));
+	});
+}
+//POST
+function postWineByData(data){
+	$.ajax({
+		method: "POST",
+		url: "http://www.project.dev/v1/wines",
+		data: data,
+		statusCode: {
+				404: f404,
+				201: init
+			}
+	});
+}
+
+//PUT {id}
+function putWineById(id){
+	var data = {
+		name: $("#wine ul li.name input").val() || $("#wine ul li.name").text(),
+		year: $("#wine ul li.year input").val() || $("#wine ul li.year").text(),
+		description: $("#wine ul li.description input").val() || $("#wine ul li.description").text(),
+		country: $("#wine ul li.country input").val() || $("#wine ul li.country").text(),
+		region: $("#wine ul li.region input").val() || $("#wine ul li.region").text(),
+		grapes: $("#wine ul li.grapes input").val() || $("#wine ul li.grapes").text()
+	};
+	$.ajax({
+		method: "PUT",
+		url: "http://www.project.dev/v1/wines/" + id,
+		data: data,
+		statusCode: {
+				404: f404,
+				201: function(data){
+					displayData(data);
+					init();
+				}
+			}
+	});
+}
+//DELETE {id}
+function deleteById(id){
+	$.ajax({
+		method: "DELETE",
+		url: "http://www.project.dev/v1/wines/" + id,
+		statusCode: {
+				404: f404,
+				204: init
+			}
+	});
+}
+</script>
 </body>
 </html>

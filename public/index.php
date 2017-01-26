@@ -133,7 +133,7 @@ header('Access-Control-Allow-Origin: http://192.168.56.110');
 				$rowAffected = $stmt->rowCount();
 
 				if($rowAffected == 1){
-					$response = $response->withStatus(201);
+					$response = $response->withStatus($wine,201);
 				}else{
 					$response = $response->withStatus(404);
 				}
